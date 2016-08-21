@@ -36,6 +36,23 @@ module ActiveForce
       @model_definition ||= self.class.description['fields']
     end
     
+    def save!
+      if valid?
+        self.new_record? ? Client.post(self) : Client.patch(self)
+        self.reload!
+        return true
+      else
+        raise "#{self.errors.full_messages}"
+      end
+    end
+    alias_method :save, :save!
+    
+    def update!
+      
+    end
+    alias_method :update_attributes!, :update!
+      
+    
     def fill_defaults
       defaults = {}
       model_definition.map do |f|
