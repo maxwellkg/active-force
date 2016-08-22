@@ -14,7 +14,7 @@ module ActiveForce
                       field['updateable'] && !self.class.not_really_updateable.include?(field['name'])
                     end
         
-        class_eval { validates_presence_of ruby_name } if !nillable && allow_set
+        class_eval { validates_presence_of ruby_name } if !nillable && allow_set && type != 'boolean'
         
         if type == 'boolean'
           class_eval { validates_inclusion_of ruby_name, :in => [true, false], :allow_nil => (nillable || !allow_set) }
