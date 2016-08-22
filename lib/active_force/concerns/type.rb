@@ -29,6 +29,22 @@ module ActiveForce
           self.tableize.singularize
         end
         
+        def forcify
+          
+        end
+        
+      end
+      
+      module Symbol
+        
+        def rubify
+          self.to_s.rubify
+        end
+        
+        def forcify
+          self.to_s.forcify
+        end
+        
       end
       
     end

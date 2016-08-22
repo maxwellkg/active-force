@@ -1,11 +1,14 @@
 module ActiveForce
   class Sobject
     
+    # custom for ActiveForce
     String.send(:include, ActiveForce::Concerns::Type::String)
+    Symbol.send(:include, ActiveForce::Concerns::Type::Symbol)
     include ActiveForce::Concerns::Type
-    include ActiveForce::Concerns::Validations
     
-    extend ActiveModel::Callbacks
+    # other
+    
+    include ActiveModel::Model
     
     define_model_callbacks :save, :only => :before
     before_save :fill_defaults
@@ -18,15 +21,15 @@ module ActiveForce
     end
     
     def initialize(attrs={})
+      attrs.symbolize_keys!
       self.model_definition.each do |field|
-        # first set the appropriate attr_accessor or # attr_reader
+        # first set the appropriate attr_accessor or attr_reader
         ruby_name = field['name'].rubify
         
         class_eval { field['isCreatable'] ? attr_accessor(ruby_name) : attr_reader(ruby_name) }
         
-        val = attrs[ruby_name]
+        val = attrs[ruby_name.to_sym]
         instance_variable_set("@#{ruby_name}", type_cast(type: field['type'], value: val))
-
       end
       
       self
@@ -36,27 +39,10 @@ module ActiveForce
       @model_definition ||= self.class.description['fields']
     end
     
-    def save!
-      if valid?
-        self.new_record? ? Client.post(self) : Client.patch(self)
-        self.reload!
-        return true
-      else
-        raise "#{self.errors.full_messages}"
-      end
-    end
-    alias_method :save, :save!
-    
-    def update!
-      
-    end
-    alias_method :update_attributes!, :update!
-      
-    
     def fill_defaults
       defaults = {}
       model_definition.map do |f|
-        defaults[f['name']] = f['defaultValue'] if f['defaultValue']
+        defaults[f['name'].to_sym] = f['defaultValue'] if f['defaultValue']
       end
       
       defaults.merge(DEFAULT_ATTRS).each do |k,v|
@@ -69,7 +55,7 @@ module ActiveForce
     end
     
     def self.find(id)
-      Client.connection.get(id, self)
+      self._metamorphose(self._load(id))
     end
     
     def self.sobject_name
@@ -77,7 +63,7 @@ module ActiveForce
     end
     
     def self.description
-      Client.connection.describe(self)
+      client.describe(self)
     end
     
     def self.not_really_creatable
@@ -88,7 +74,20 @@ module ActiveForce
       []
     end
     
+    private
     
+    def self._load(id)
+      client.get(id, self)
+    end
+    
+    # creates an instance of the class from an API result
+    def self._metamorphose(result)
+      rubified_attrs = {}
+      result.each do |k,v|
+        rubified_attrs[k.rubify] = v
+      end
+      self.new(rubified_attrs)      
+    end
     
   end
 end

@@ -50,7 +50,7 @@ module ActiveForce
     end
     
     def describe(klass)
-        endpoint_request(:get, "sobjects/#{klass.sobject_name}/describe")
+      endpoint_request(:get, "sobjects/#{klass.sobject_name}/describe")
     end
     
     
@@ -93,12 +93,10 @@ module ActiveForce
         request.body = data.to_json
       end
       
-      ap "calling!"
       response = http.request(request)
       
       raise "Salesforce API error #{response.code}: #{response.body} -- #{request.path} #{request.uri} #{request.body}" if response.is_bad?
       
-      ap response
       if response.body
         JSON.parse(response.body)
       else
