@@ -2,18 +2,20 @@ module ActiveForce
   class Sobject
     
     # custom for ActiveForce
-    String.send(:include, ActiveForce::Concerns::Type::String)
-    Symbol.send(:include, ActiveForce::Concerns::Type::Symbol)
     include ActiveForce::Concerns::Type
+    include ActiveForce::Concerns::FinderMethods
+    include ActiveForce::Concerns::Persistence
+    include ActiveForce::Concerns::Validations
     
-    # other
+    include ActiveModel::Validations
     
-    include ActiveModel::Model
+    #include ActiveModel::Model
     
-    define_model_callbacks :save, :only => :before
-    before_save :fill_defaults
-    
-    DEFAULT_ATTRS = {}
+    #define_model_callbacks :save, :only => :before
+    #before_save :fill_defaults
+
+    BASE_DEFAULT_ATTRS = {}.freeze
+    DEFAULT_ATTRS = {}.freeze
     
     
     def self.client
@@ -27,6 +29,7 @@ module ActiveForce
         ruby_name = field['name'].rubify
         
         class_eval { field['isCreatable'] ? attr_accessor(ruby_name) : attr_reader(ruby_name) }
+        set_validations(field)
         
         val = attrs[ruby_name.to_sym]
         instance_variable_set("@#{ruby_name}", type_cast(type: field['type'], value: val))
@@ -54,10 +57,6 @@ module ActiveForce
       self
     end
     
-    def self.find(id)
-      self._metamorphose(self._load(id))
-    end
-    
     def self.sobject_name
       self.to_s.gsub('ActiveForce::','')
     end
@@ -75,19 +74,6 @@ module ActiveForce
     end
     
     private
-    
-    def self._load(id)
-      client.get(id, self)
-    end
-    
-    # creates an instance of the class from an API result
-    def self._metamorphose(result)
-      rubified_attrs = {}
-      result.each do |k,v|
-        rubified_attrs[k.rubify] = v
-      end
-      self.new(rubified_attrs)      
-    end
     
   end
 end

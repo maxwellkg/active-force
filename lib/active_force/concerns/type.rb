@@ -2,6 +2,12 @@ module ActiveForce
   module Concerns
     module Type
       
+      def self.included(base)
+        String.send(:include, self::StringMethods)
+        Symbol.send(:include, self::SymbolMethods)
+        Hash.send(:include, self::HashMethods)
+      end
+      
       def type_cast(type:, value:)
       
         case type
@@ -23,7 +29,7 @@ module ActiveForce
         end
       end
       
-      module String
+      module StringMethods
         
         def rubify
           self.tableize.singularize
@@ -35,7 +41,7 @@ module ActiveForce
         
       end
       
-      module Symbol
+      module SymbolMethods
         
         def rubify
           self.to_s.rubify
@@ -43,6 +49,16 @@ module ActiveForce
         
         def forcify
           self.to_s.forcify
+        end
+        
+      end
+      
+      module HashMethods
+        
+        def rubify_keys
+          rubified = {}
+          self.each { |k,v| rubified[k.rubify] = v }
+          rubified
         end
         
       end
