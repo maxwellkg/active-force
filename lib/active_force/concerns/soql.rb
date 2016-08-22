@@ -2,7 +2,7 @@ module ActiveForce
   module Concerns
     module SOQL
       
-      def self.sanitize_soql_for_assignment(assignments)
+      def sanitize_soql_for_assignment(assignments)
         case assignments
         when Array
           sanitize_soql_array(assignments)
@@ -13,7 +13,7 @@ module ActiveForce
         end
       end
       
-      def self.sanitize_soql_array(assignments)
+      def sanitize_soql_array(assignments)
         statement, *values = assignments
         
         if values.first.is_a? Hash
@@ -25,7 +25,7 @@ module ActiveForce
         end
       end
       
-      def self.sanitize_soql_hash(assignments)
+      def sanitize_soql_hash(assignments)
         assignments.collect { |k,v| "#{k.forcify}=#{quote_bound_value(v)}" }.join(' AND ')
       end
       

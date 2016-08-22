@@ -3,9 +3,11 @@ module ActiveForce
     
     # custom for ActiveForce
     include ActiveForce::Concerns::Type
-    include ActiveForce::Concerns::FinderMethods
     include ActiveForce::Concerns::Persistence
     include ActiveForce::Concerns::Validations
+    
+    extend ActiveForce::Concerns::FinderMethods
+    extend ActiveForce::Concerns::QueryMethods
     
     include ActiveModel::Validations
     
@@ -25,6 +27,7 @@ module ActiveForce
     def initialize(attrs={})
       attrs.symbolize_keys!
       self.model_definition.each do |field|
+        # TODO protect against unknown attributes
         # first set the appropriate attr_accessor or attr_reader
         ruby_name = field['name'].rubify
         

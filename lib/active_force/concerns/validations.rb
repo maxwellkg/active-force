@@ -25,6 +25,11 @@ module ActiveForce
         end
         
       end
+        
+      def validate!
+        self.valid? ? true : self.errors.full_messages
+      end
+      
     end
   end
 end
