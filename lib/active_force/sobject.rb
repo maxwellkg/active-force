@@ -5,6 +5,7 @@ module ActiveForce
     include ActiveForce::Concerns::Type
     include ActiveForce::Concerns::Persistence
     include ActiveForce::Concerns::Validations
+    include ActiveForce::Concerns::MissingMethods
     
     extend ActiveForce::Concerns::FinderMethods
     extend ActiveForce::Concerns::QueryMethods
@@ -24,8 +25,9 @@ module ActiveForce
       ActiveForce::Client.connection
     end
     
-    def initialize(attrs={})
+    def initialize(attrs={}, model_definition: nil)
       attrs.symbolize_keys!
+      @model_definition = model_definition if model_definition.present?
       self.model_definition.each do |field|
         # TODO protect against unknown attributes
         # first set the appropriate attr_accessor or attr_reader
@@ -65,6 +67,7 @@ module ActiveForce
     end
     
     def self.description
+      ap "calling description!"
       client.describe(self)
     end
     

@@ -45,9 +45,18 @@ module ActiveForce
         Client.connection.get(id, self)        
       end
       
-      # creates a new instance of the class from an API request response
+      # creates a new instance (or collection of instances) of the class from an API request response
       def _metamorphose(result)
-        self.new(result.rubify_keys)
+        # TODO what to return if no results?
+        if result.is_a? Hash
+          self.new(result.rubify_keys)
+        else
+          collection = []
+          results.each do |record|
+            collection.push(_metamorphose(record))
+          end
+          collection
+        end
       end
       
     end

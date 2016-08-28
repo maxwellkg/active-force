@@ -22,7 +22,7 @@ module ActiveForce
     }.freeze    
     
     def self.connection
-      @connection ||= self.new
+      @@connection ||= self.new
     end
     
     def initialize
@@ -53,6 +53,24 @@ module ActiveForce
       endpoint_request(:get, "sobjects/#{klass.sobject_name}/describe")
     end
     
+    def execute_soql(query)
+      query = CGI.escape(query)
+      
+      results = endpoint_request(:get, "query/?q=#{query}")
+      
+      results.push(get_next_records(results)) if results['nextRecordsUrl']
+      
+      results.flatten
+    end
+    
+    def get_next_records(results)
+      id = results['nextRecordsUrl'][results['nextRecordsUrl'].rindex('/')+1..-1]
+      
+      additional_results = endpoint_request(:get, "query/#{id}")
+
+      additional_results.push(get_next_records(additional_results)) if additional_results['nextRecordsUrl']
+    end
+    
     
     private
     
@@ -77,7 +95,7 @@ module ActiveForce
     end
     
     def endpoint_uri(endpoint, params = {})
-      URI.encode("#{SERVICES_BASE}/#{VERSION}/#{endpoint}/#{params.map { |k,v| "#{k.to_s}=#{v.to_s}"} if !params.empty?}")
+      URI.encode("#{SERVICES_BASE}/#{VERSION}/#{endpoint}#{"/#{params.map { |k,v| "#{k.to_s}=#{v.to_s}"}}" if !params.empty?}")
     end
       
     def endpoint_request(method, endpoint, data = {})
