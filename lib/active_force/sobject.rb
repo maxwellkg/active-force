@@ -9,6 +9,8 @@ module ActiveForce
     
     extend ActiveForce::Concerns::FinderMethods
     extend ActiveForce::Concerns::QueryMethods
+    extend ActiveForce::Concerns::QueryBuilder
+    extend ActiveForce::Concerns::Calculations
     
     include ActiveModel::Validations
     
@@ -67,7 +69,6 @@ module ActiveForce
     end
     
     def self.description
-      ap "calling description!"
       client.describe(self)
     end
     
@@ -78,6 +79,7 @@ module ActiveForce
     def self.not_really_updateable
       []
     end
+    
     
     private
     

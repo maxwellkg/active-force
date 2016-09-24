@@ -39,6 +39,51 @@ module ActiveForce
         results
       end
       
+      def find_nth_query(order_by:, index:)
+        order_by.upcase!
+        raise "Not a valid ordering" if !['ASC','DESC'].include?(order_by)
+
+        "SELECT Id FROM #{self.sobject_name} ORDER BY CreatedDate #{order_by} LIMIT 1 OFFSET #{index - 1 }"
+                
+      end
+      
+      def find_nth(index)
+        query = find_nth_query(order_by: 'ASC', index: index)
+        
+        id = client.execute_soql(query)['records'].first['Id']
+        
+        find_one(id)
+      end
+      
+      def find_nth_from_last(index)
+        query = find_nth_query(order_by: 'DESC', index: index)
+        
+        id = client.execute_soql(query)['records'].first['Id']
+        
+        find_one(id)
+      end
+      
+      def first
+        find_nth(1)
+      end
+      
+      def second
+        find_nth(2)
+      end
+      
+      def third
+        find_nth(3)
+      end
+      
+      def fourth
+        find_nth(4)
+      end
+      
+      def fifth
+        find_nth(5)
+      end
+      
+      
       private
       
       def _load(id)

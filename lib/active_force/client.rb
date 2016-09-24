@@ -54,13 +54,20 @@ module ActiveForce
     end
     
     def execute_soql(query)
-      query = CGI.escape(query)
+      
+      # TODO see if we need the CGI/if so, find a way around the parentheses issue
+      # also need to figure out how to combine the results without flattening
+      # which is currently converting the hashes into arrays
+      
+      #query = CGI.escape(query)
       
       results = endpoint_request(:get, "query/?q=#{query}")
       
       results.push(get_next_records(results)) if results['nextRecordsUrl']
       
-      results.flatten
+      results
+      
+      #results.flatten
     end
     
     def get_next_records(results)

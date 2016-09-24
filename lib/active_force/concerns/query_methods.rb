@@ -3,7 +3,7 @@ module ActiveForce
     module QueryMethods
       
       def where(conditions)
-        Client.connection.execute_soql(conditions)
+        Client.connection.execute_soql(build_query(conditions: conditions))
       end
       
       
