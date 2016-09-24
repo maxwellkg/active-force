@@ -1,5 +1,5 @@
 module ActiveForce
-  module Concerns
+  module Relation
     module SOQL
       
       def sanitize_soql_for_assignment(assignments)

@@ -3,7 +3,7 @@ require 'net/http'
 module ActiveForce
   class Client
     
-    Net::HTTPResponse.send(:include, ActiveForce::Concerns::API::ResponseMethods)
+    Net::HTTPResponse.send(:include, ActiveForce::API::ResponseMethods)
     
     HOST = 'login.salesforce.com'.freeze
     PORT = 443.freeze

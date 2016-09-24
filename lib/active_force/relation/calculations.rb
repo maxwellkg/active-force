@@ -1,5 +1,5 @@
 module ActiveForce
-  module Concerns
+  module Relation
     module Calculations
       
       def count(conditions: nil)

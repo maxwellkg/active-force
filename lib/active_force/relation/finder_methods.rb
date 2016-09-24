@@ -1,8 +1,8 @@
 module ActiveForce
-  module Concerns
+  module Relation
     module FinderMethods
       
-      Hash.send(:include, ActiveForce::Concerns::Type::HashMethods)
+      Hash.send(:include, ActiveForce::Type::HashMethods)
       
       def find(*args)
         return super if block_given?

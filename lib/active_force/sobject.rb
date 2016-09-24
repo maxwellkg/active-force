@@ -2,15 +2,15 @@ module ActiveForce
   class Sobject
     
     # custom for ActiveForce
-    include ActiveForce::Concerns::Type
-    include ActiveForce::Concerns::Persistence
-    include ActiveForce::Concerns::Validations
-    include ActiveForce::Concerns::MissingMethods
+    include ActiveForce::Type
+    include ActiveForce::Persistence
+    include ActiveForce::Validations
+    include ActiveForce::MissingMethods
     
-    extend ActiveForce::Concerns::FinderMethods
-    extend ActiveForce::Concerns::QueryMethods
-    extend ActiveForce::Concerns::QueryBuilder
-    extend ActiveForce::Concerns::Calculations
+    extend ActiveForce::Relation::FinderMethods
+    extend ActiveForce::Relation::QueryMethods
+    extend ActiveForce::Relation::QueryBuilder
+    extend ActiveForce::Relation::Calculations
     
     include ActiveModel::Validations
     

@@ -1,5 +1,5 @@
 module ActiveForce
-  module Concerns
+  module Relation
     module QueryBuilder
       
       def build_query(fields: nil, conditions: nil)
