@@ -80,6 +80,9 @@ module ActiveForce
       []
     end
     
+    def self.first_or_last
+      
+    end
     
     private
     
