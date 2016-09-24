@@ -52,5 +52,29 @@ module ActiveForce
     # for the time being, these should be the same
     alias_method :destroy, :delete
     
+    module ClassMethods
+      
+      def create(attributes = nil, &block)
+        if attributes.is_a?(Array)
+          attributes.collect { |attr| create(attr, &block) }
+        else
+          object = new(attributes, &block)
+          object.save
+          object
+        end
+      end
+      
+      def create!
+        if attributes.is_a?(Array)
+          attributes.collect { |attr| create(attr, &block) }
+        else
+          object = new(attributes, &block)
+          object.save!
+          object
+        end
+      end
+      
+    end
+    
   end
 end

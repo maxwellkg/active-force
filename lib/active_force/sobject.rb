@@ -7,6 +7,7 @@ module ActiveForce
     include ActiveForce::Validations
     include ActiveForce::MissingMethods
     
+    extend ActiveForce::Persistence::ClassMethods
     extend ActiveForce::Relation::FinderMethods
     extend ActiveForce::Relation::QueryMethods
     extend ActiveForce::Relation::QueryBuilder
