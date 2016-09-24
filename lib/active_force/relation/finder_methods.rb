@@ -15,9 +15,15 @@ module ActiveForce
         # we'll want to do something like .take so that we only get the first record
         # to begin with
       end
+      
+      
+      # Class#all is now deprecated, so we should change this to match newer versions of rails
+      def all(conditions: nil)
+        find_by_soql(build_query(conditions: conditions))
+      end
 
       def find_by_soql(query)
-        _metamorphose(Client.connection.execute_soql(query)['records'])
+        _metamorphose(client.execute_soql(query)['records'])
       end
       
       def find_with_ids(*ids)
@@ -51,6 +57,7 @@ module ActiveForce
       end
       
       def find_nth_query(order_by:, index:)
+        # TODO work on the query builder so that we can just do this from there
         order_by.upcase!
         raise "Not a valid ordering" if !['ASC','DESC'].include?(order_by)
 
@@ -61,9 +68,7 @@ module ActiveForce
       def find_nth(index)
         query = find_nth_query(order_by: 'ASC', index: index)
         
-        id = client.execute_soql(query)['records'].first['Id']
-        
-        find_one(id)
+        _metamorphose(client.execute_soql(query)['records'])
       end
       
       def find_nth!(index)
@@ -74,6 +79,8 @@ module ActiveForce
         query = find_nth_query(order_by: 'DESC', index: index)
         
         id = client.execute_soql(query)['records'].first['Id']
+        
+        _metamorphose(client.execute_soql(query)['records'])
         
         find_one(id)
       end
@@ -162,7 +169,8 @@ module ActiveForce
             _metamorphose(result.first)
           else
             collection = []
-            results.each do |record|
+            result.each do |record|
+              ap "sending a record back to the method!"
               collection.push(_metamorphose(record))
             end
             collection

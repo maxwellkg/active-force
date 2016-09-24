@@ -7,11 +7,6 @@ module ActiveForce
         client.execute_soql(q)['totalSize']
       end
       
-      def all(conditions: nil)
-        q = build_query(conditions: conditions)
-        client.execute_soql(q)
-      end
-      
     end
   end
 end
