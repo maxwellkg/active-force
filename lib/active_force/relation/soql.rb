@@ -26,7 +26,7 @@ module ActiveForce
       end
       
       def sanitize_soql_hash(assignments)
-        assignments.collect { |k,v| "#{k.forcify}=#{quote_bound_value(v)}" }.join(' AND ')
+        assignments.collect { |k,v| "#{forcify(k)}=#{quote_bound_value(v)}" }.join(' AND ')
       end
       
       def quote_bound_value(value)

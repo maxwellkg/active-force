@@ -11,6 +11,7 @@ module ActiveForce
     extend ActiveForce::Relation::FinderMethods
     extend ActiveForce::Relation::QueryMethods
     extend ActiveForce::Relation::QueryBuilder
+    extend ActiveForce::Relation::Forcification
     extend ActiveForce::Relation::Calculations
     
     include ActiveModel::Validations

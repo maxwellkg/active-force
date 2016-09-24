@@ -9,6 +9,17 @@ module ActiveForce
         find_with_ids(*args)
       end
       
+      def find_by(*args)
+        where(*args).first
+        # TODO, this will load a bunch of records and then choose the first
+        # we'll want to do something like .take so that we only get the first record
+        # to begin with
+      end
+
+      def find_by_soql(query)
+        _metamorphose(Client.connection.execute_soql(query)['records'])
+      end
+      
       def find_with_ids(*ids)
         expects_array = ids.first.is_a? Array
         return ids.first if expects_array && ids.first.nil?
@@ -147,11 +158,15 @@ module ActiveForce
         if result.is_a? Hash
           self.new(result.rubify_keys)
         else
-          collection = []
-          results.each do |record|
-            collection.push(_metamorphose(record))
+          if result.size == 1
+            _metamorphose(result.first)
+          else
+            collection = []
+            results.each do |record|
+              collection.push(_metamorphose(record))
+            end
+            collection
           end
-          collection
         end
       end
       
