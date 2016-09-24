@@ -55,6 +55,10 @@ module ActiveForce
         find_one(id)
       end
       
+      def find_nth!(index)
+        find_nth(index) or raise "Couldn't find #{self.sobject_name} with index #{index}"
+      end
+      
       def find_nth_from_last(index)
         query = find_nth_query(order_by: 'DESC', index: index)
         
@@ -63,26 +67,73 @@ module ActiveForce
         find_one(id)
       end
       
+      def find_nth_from_last!(index)
+        find_nth_from_last(index) or raise "Couldn't find #{self.sobject_name} with index of - #{index}"
+      end
+      
       def first
         find_nth(1)
+      end
+      
+      def first!
+        find_nth!(1)
       end
       
       def second
         find_nth(2)
       end
       
+      def second!
+        find_nth!(2)
+      end
+      
       def third
         find_nth(3)
+      end
+      
+      def third!
+        find_nth!(3)
       end
       
       def fourth
         find_nth(4)
       end
       
+      def fourth!
+        find_nth!(4)
+      end
+      
       def fifth
         find_nth(5)
       end
       
+      def fifth!
+        find_nth!(5)
+      end
+      
+      def last
+        find_nth_from_last(1)
+      end
+      
+      def last!
+        find_nth_from_last!(1)
+      end
+      
+      def second_to_last
+        find_nth_from_last(2)
+      end
+      
+      def second_to_last!
+        find_nth_from_last!(2)
+      end
+      
+      def third_to_last
+        find_nth_from_last(3)
+      end
+      
+      def third_to_last!
+        find_nth_from_last!(3)
+      end
       
       private
       
