@@ -34,10 +34,6 @@ module ActiveForce
         self.tableize.singularize
       end
       
-      def forcify(model_definition)
-        model_definition.detect { |f| f['ruby_name'] == self }['Name']
-      end
-      
     end
     
     module SymbolMethods
