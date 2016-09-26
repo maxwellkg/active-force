@@ -32,9 +32,7 @@ module ActiveForce
     )
     
     def initialize(attrs = {})
-      attrs.each do |attr, value|
-        instance_variable_set("@#{attr}", value) if self.respond_to?(attr)
-      end
+      attrs.each { |attr, value| self.send("#{attr}=", value) }
     end
     
     def to_soql
