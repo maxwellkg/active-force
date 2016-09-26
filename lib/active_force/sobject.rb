@@ -24,11 +24,6 @@ module ActiveForce
     BASE_DEFAULT_ATTRS = {}.freeze
     DEFAULT_ATTRS = {}.freeze
     
-    
-    def self.client
-      ActiveForce::Client.connection
-    end
-    
     def initialize(attrs={}, model_definition: nil)
       attrs.symbolize_keys!
       @model_definition = model_definition if model_definition.present?
@@ -66,6 +61,10 @@ module ActiveForce
       self
     end
     
+    def self.client
+      ActiveForce::Client.connection
+    end
+    
     def self.sobject_name
       self.to_s.gsub('ActiveForce::','')
     end
@@ -80,10 +79,6 @@ module ActiveForce
     
     def self.not_really_updateable
       []
-    end
-    
-    def self.first_or_last
-      
     end
     
     private
