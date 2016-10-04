@@ -30,7 +30,7 @@ module ActiveForce
       end
       
       def quote_bound_value(value)
-        value.class == String ? "'#{value}'" : value
+        value.is_a?(String) ? "'#{value}'" : value
       end
 
       def replace_bind_variables(statement, values)

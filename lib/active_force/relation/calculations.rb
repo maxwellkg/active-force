@@ -23,7 +23,7 @@ module ActiveForce
       end
       
       def pluck(*column_names)
-        
+        # TODO figure out how to keep null values where applicable and not where not
       end
       
       def ids

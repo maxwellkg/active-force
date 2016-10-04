@@ -7,7 +7,7 @@ module ActiveForce
     def has_one(name, options = {} )
       raise "Please specify a primary key in order to locate the association" if !options.keys.include(:primary_key)
       
-      name.activeforce_modulize.constantize.send("find_by_#{options[:primary_key]}", self.send("#{options[:primary_key]}")
+      
     end
      
     def has_many

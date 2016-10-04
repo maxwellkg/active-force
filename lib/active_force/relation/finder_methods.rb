@@ -166,14 +166,11 @@ module ActiveForce
           self.new(result.rubify_keys)
         else
           if result.size == 1
-            _metamorphose(result.first)
+            _metamorphose(result.first.rubify_keys)
           else
-            collection = []
-            result.each do |record|
-              ap "sending a record back to the method!"
-              collection.push(_metamorphose(record))
+            result.collect do |record|
+              _metamorphose(record.rubify_keys)
             end
-            collection
           end
         end
       end

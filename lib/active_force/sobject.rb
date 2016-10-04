@@ -13,6 +13,8 @@ module ActiveForce
     extend ActiveForce::Relation::QueryBuilder
     extend ActiveForce::Relation::Forcification
     extend ActiveForce::Relation::Calculations
+    extend ActiveForce::Relation::Querification
+    extend ActiveForce::Relation::SOQL
     
     include ActiveModel::Validations
     
@@ -37,6 +39,7 @@ module ActiveForce
         
         val = attrs[ruby_name.to_sym]
         instance_variable_set("@#{ruby_name}", type_cast(type: field['type'], value: val))
+        #self.send("#{ruby_name}=", type_cast(type: field['type'], value: val))
       end
       
       self
