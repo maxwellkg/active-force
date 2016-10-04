@@ -5,6 +5,9 @@ module ActiveForce
     include ActiveForce::Relation::Querification
     include ActiveForce::Relation::QueryMethods
     include ActiveForce::Relation::QueryBuilder
+    include ActiveForce::Relation::Forcification
+    
+    extend ActiveForce::Relation::Forcification::ClassMethods
     
     # see https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select.htm
     # for more information on SOQL SELECT syntax
@@ -55,7 +58,7 @@ module ActiveForce
     
       def sobject_name
         # TODO we'll need to somehow allow for custom ruby names
-        "ActiveForce::#{self.object_type.capitalize}"
+        self.object_type.activeforce_modulize
       end
      
   end
