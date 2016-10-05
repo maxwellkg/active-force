@@ -57,101 +57,104 @@ module ActiveForce
         results
       end
       
-      def find_nth_query(order_by:, index:)
-        # TODO work on the query builder so that we can just do this from there
-        raise "Not a valid ordering" if ![:asc, :desc].include?(order_by)
+      def find_nth(index, limit: 1)
+        query = querify!
         
-        ActiveForce::Query.from_sobject(self).order(:created_date => order_by.to_s.upcase).limit(1).offset(index - 1).to_soql
-                
-      end
-      
-      def find_nth(index)
-        query = find_nth_query(:order_by => :asc, :index => index)
-        
-        find_by_soql(query)
-        #_metamorphose(client.execute_soql(query)['records'])
+        # default ordering in SFDC should be by the created date
+        query.field_order_by_list ||= 'CreatedDate ASC'
+        query.number_of_rows_to_skip = index
+        query.number_of_rows_to_return = limit
+        find_by_soql(query.to_soql)
       end
       
       def find_nth!(index)
         find_nth(index) or raise "Couldn't find #{self.sobject_name} with index #{index}"
       end
       
-      def find_nth_from_last(index)
-        query = find_nth_query(:ordery_by => :desc, :index => index)
+      def find_nth_from_last(index, limit: 1)
+        query = querify!
         
-        id = client.execute_soql(query)['records'].first['Id']
+        query.field_order_by_list ||= 'CreatedDate DESC'
         
-        _metamorphose(client.execute_soql(query)['records'])
-        
-        find_one(id)
+        find_by_soql(query.to_soql)[-index]
       end
       
       def find_nth_from_last!(index)
         find_nth_from_last(index) or raise "Couldn't find #{self.sobject_name} with index of - #{index}"
       end
       
-      def first
-        find_nth(1)
+      def first(limit = nil)
+        limit.present? ? find_nth(0, limit) : find_nth(0)
       end
       
       def first!
-        find_nth!(1)
+        find_nth!(0)
       end
       
       def second
-        find_nth(2)
+        find_nth(1)
       end
       
       def second!
-        find_nth!(2)
+        find_nth!(1)
       end
       
       def third
-        find_nth(3)
+        find_nth(2)
       end
       
       def third!
-        find_nth!(3)
+        find_nth!(2)
       end
       
       def fourth
-        find_nth(4)
+        find_nth(3)
       end
       
       def fourth!
-        find_nth!(4)
+        find_nth!(3)
       end
       
       def fifth
-        find_nth(5)
+        find_nth(4)
       end
       
       def fifth!
-        find_nth!(5)
+        find_nth!(4)
       end
       
-      def last
-        find_nth_from_last(1)
+      def last(limit = nil)
+        # TODO fix some funniness around this
+        if limit.present?
+          query = querify!
+          
+          query.field_order_by_list = 'CreatedDate DESC'
+          query.number_of_rows_to_return = limit
+        
+          find_by_soql(query.to_soql)
+        else
+          find_nth_from_last(0)
+        end
       end
       
       def last!
-        find_nth_from_last!(1)
+        find_nth_from_last!(0)
       end
       
       def second_to_last
-        find_nth_from_last(2)
+        find_nth_from_last(1)
       end
       
       def second_to_last!
-        find_nth_from_last!(2)
+        find_nth_from_last!(1)
       end
       
       def third_to_last
-        find_nth_from_last(3)
+        find_nth_from_last(2)
       end
       
       def third_to_last!
-        find_nth_from_last!(3)
+        find_nth_from_last!(2)
       end
       
       private
