@@ -2,15 +2,31 @@ module ActiveForce
   module Relation
     module QueryMethods
       
-      def where(conditions)
+      def where(conditions = nil)
         #find_by_soql(build_query(conditions: conditions))
         
-        querify.build(:where, sanitize_soql_for_assignment(conditions))
+        return self if conditions.nil?
+        
+        querify!._where!(conditions)
+      end
+      
+      def _where!(conditions)
+        self.condition_expression = sanitize_soql_for_assignment(conditions)
+        self
+      end
+      
+      def not(conditions)
+        querify!._not!(conditions)
+      end
+      
+      def _not!(conditions)
+        self.condition_expression = sanitize_soql_for_inequality(conditions)
+        self
       end
       
       def or(other)
         if other.is_a?(ActiveForce::Query)
-          querify._or!(other)
+          self._or!(other)
         else
           raise "You have passed object of type #{other.class} to #or. Try passing an object of type ActiveForce::Query"
         end
@@ -24,7 +40,7 @@ module ActiveForce
       end
       
       def select(*fields)
-        querify._select!(*fields)
+        querify!._select!(*fields)
       end
       
       def _select!(*fields)
@@ -36,7 +52,7 @@ module ActiveForce
       end
       
       def limit(num_records)
-        querify._limit!(num_records)
+        querify!._limit!(num_records)
       end
       
       def _limit!(num_records)
@@ -45,7 +61,7 @@ module ActiveForce
       end
       
       def offset(num_records)
-        querify._offset!(num_records)
+        querify!._offset!(num_records)
       end
       
       def _offset!(num_records)

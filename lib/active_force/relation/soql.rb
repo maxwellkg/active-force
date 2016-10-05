@@ -13,6 +13,19 @@ module ActiveForce
         end
       end
       
+      def sanitize_soql_for_inequality(assignments)
+        # keep this way or do something more complicated but in line w/ rails ??
+        case assignments
+        when Array
+          # != or NOT IN will already be specified
+          sanitize_soql_array(assignments)
+        when Hash
+          sanitize_soql_inequal_hash(assignments)
+        else
+          assignments
+        end
+      end
+      
       def sanitize_soql_array(assignments)
         statement, *values = assignments
         
@@ -26,7 +39,24 @@ module ActiveForce
       end
       
       def sanitize_soql_hash(assignments)
-        assignments.collect { |k,v| "#{forcify(k)}=#{quote_bound_value(v)}" }.join(' AND ')
+        assignments.collect do |k,v|
+          if v.is_a? Array
+            "#{forcify(k)} IN (#{v.collect { |value| quote_bound_value(value) }.join(',')})"
+          else
+            "#{forcify(k)}=#{quote_bound_value(v)}"
+          end
+        end.join(' AND ')
+        
+      end
+      
+      def sanitize_soql_inequal_hash(assignments)
+        assignments.collect do |k,v|
+          if v.is_a? Array
+            "#{forcify(k)} NOT IN (#{v.collect { |value| quote_bound_value(value) }.join(',')})"
+          else
+            "#{forcify(k)} != #{quote_bound_value(v)}"
+          end
+        end.join(' AND ')
       end
       
       def quote_bound_value(value)

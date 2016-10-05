@@ -1,6 +1,8 @@
 module ActiveForce
   module Relation
     module Forcification
+      
+      String.send(:include, ActiveForce::Inflector)
    
       def forcify(ruby_name)
         klass = self.is_a?(ActiveForce::Query) ? self.object_type.activeforce_modulize.constantize : self.class
