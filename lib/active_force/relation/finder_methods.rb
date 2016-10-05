@@ -24,9 +24,7 @@ module ActiveForce
 
       def find_by_soql(query)
         result = client.execute_soql(query)['records']
-        ap result
         _metamorphose(result)
-        #_metamorphose(client.execute_soql(query)['records'])
       end
       
       def find_with_ids(*ids)
@@ -61,17 +59,17 @@ module ActiveForce
       
       def find_nth_query(order_by:, index:)
         # TODO work on the query builder so that we can just do this from there
-        order_by.upcase!
         raise "Not a valid ordering" if ![:asc, :desc].include?(order_by)
         
-        ActiveForce::Query.from_sobject(self).order(:created_date => :order_by).limit(1).offset(index - 1).to_soql
+        ActiveForce::Query.from_sobject(self).order(:created_date => order_by.to_s.upcase).limit(1).offset(index - 1).to_soql
                 
       end
       
       def find_nth(index)
         query = find_nth_query(:order_by => :asc, :index => index)
         
-        _metamorphose(client.execute_soql(query)['records'])
+        find_by_soql(query)
+        #_metamorphose(client.execute_soql(query)['records'])
       end
       
       def find_nth!(index)
