@@ -46,7 +46,7 @@ module ActiveForce
       def _select!(*fields)
         fields.flatten!
         # TODO make this an array rather than a string?
-        self.field_list = fields.join(', ')
+        self.field_list = fields.map { |f| forcify(f) }.join(', ')
         
         self
       end
@@ -69,7 +69,37 @@ module ActiveForce
         self
       end
       
+      def order(*args)
+        querify!._order!(*args)
+      end
+      
+      def _order!(*args)
+        self.field_order_by_list = process_or_arguments(*args)
+        self
+      end
+      
       private
+      
+        def process_or_arguments(*args)
+          case args
+          when Array
+            args.collect do |arg|
+              if arg.is_a? Hash
+                process_or_argument_hash(arg)
+              else
+                "#{forcify(arg)} ASC"
+              end
+            end.join(', ')
+          when Hash
+            process_or_argument_hash(*args)
+          else
+            args
+          end
+        end
+        
+        def process_or_argument_hash(args)
+          args.collect { |k,v| "#{forcify(k)} #{v}" }
+        end
       
         def check_valid_or_statement(other)
           raise "Both statements must include a matching having or where clause to use or" if !_valid_or_statement?(other)

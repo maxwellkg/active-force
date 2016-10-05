@@ -48,6 +48,14 @@ module ActiveForce
         self.send(v).present? ? "#{k} #{self.send(v)}" : nil
       end.compact.join(' ')
     end
+
+=begin
+    def inspect
+      klass = self.object_type.activeforce_modulize.constantize
+      
+      klass.find_by_soql(self.to_soql)
+    end
+=end
     
     def self.from_sobject(sobject)
       # TODO we'll need to be able to set fields and potentially other options here
