@@ -23,7 +23,10 @@ module ActiveForce
       end
 
       def find_by_soql(query)
-        _metamorphose(client.execute_soql(query)['records'])
+        result = client.execute_soql(query)['records']
+        ap result
+        _metamorphose(result)
+        #_metamorphose(client.execute_soql(query)['records'])
       end
       
       def find_with_ids(*ids)
@@ -59,14 +62,14 @@ module ActiveForce
       def find_nth_query(order_by:, index:)
         # TODO work on the query builder so that we can just do this from there
         order_by.upcase!
-        raise "Not a valid ordering" if !['ASC','DESC'].include?(order_by)
-
-        "SELECT Id FROM #{self.sobject_name} ORDER BY CreatedDate #{order_by} LIMIT 1 OFFSET #{index - 1 }"
+        raise "Not a valid ordering" if ![:asc, :desc].include?(order_by)
+        
+        ActiveForce::Query.from_sobject(self).order(:created_date => :order_by).limit(1).offset(index - 1).to_soql
                 
       end
       
       def find_nth(index)
-        query = find_nth_query(order_by: 'ASC', index: index)
+        query = find_nth_query(:order_by => :asc, :index => index)
         
         _metamorphose(client.execute_soql(query)['records'])
       end
@@ -76,7 +79,7 @@ module ActiveForce
       end
       
       def find_nth_from_last(index)
-        query = find_nth_query(order_by: 'DESC', index: index)
+        query = find_nth_query(:ordery_by => :desc, :index => index)
         
         id = client.execute_soql(query)['records'].first['Id']
         
@@ -155,25 +158,25 @@ module ActiveForce
       
       private
       
-      def _load(id)
-        Client.connection.get(id, self)        
-      end
-      
-      # creates a new instance (or collection of instances) of the class from an API request response
-      def _metamorphose(result)
-        # TODO what to return if no results?
-        if result.is_a? Hash
-          self.new(result.rubify_keys)
-        else
-          if result.size == 1
-            _metamorphose(result.first.rubify_keys)
+        def _load(id)
+          Client.connection.get(id, self)        
+        end
+        
+        # creates a new instance (or collection of instances) of the class from an API request response
+        def _metamorphose(result)
+          # TODO what to return if no results?
+          if result.is_a? Hash
+            self.new(result.rubify_keys)
           else
-            result.collect do |record|
-              _metamorphose(record.rubify_keys)
+            if result.size == 1
+              _metamorphose(result.first.rubify_keys)
+            else
+              result.collect do |record|
+                _metamorphose(record.rubify_keys)
+              end
             end
           end
         end
-      end
       
     end
   end
