@@ -1,5 +1,5 @@
 module ActiveForce
-  module Relation
+  module Queries
     module FinderMethods
       
       Hash.send(:include, ActiveForce::Type::HashMethods)
@@ -21,7 +21,7 @@ module ActiveForce
       def all(conditions: nil)
         find_by_soql(build_query(conditions: conditions))
       end
-
+  
       def find_by_soql(query)
         result = client.execute_soql(query)['records']
         _metamorphose(result)

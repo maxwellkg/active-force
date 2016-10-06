@@ -1,13 +1,13 @@
 module ActiveForce
   class Query
     
-    include ActiveForce::Relation::SOQL
-    include ActiveForce::Relation::Querification
-    include ActiveForce::Relation::QueryMethods
-    include ActiveForce::Relation::QueryBuilder
-    include ActiveForce::Relation::Forcification
+    include ActiveForce::Queries::SOQL
+    include ActiveForce::Queries::Querification
+    include ActiveForce::Queries::QueryMethods
+    include ActiveForce::Queries::QueryBuilder
+    include ActiveForce::Queries::Forcification
     
-    extend ActiveForce::Relation::Forcification::ClassMethods
+    extend ActiveForce::Queries::Forcification::ClassMethods
     
     # see https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select.htm
     # for more information on SOQL SELECT syntax

@@ -1,5 +1,5 @@
 module ActiveForce
-  module Relation
+  module Queries
     module SOQL
       
       def sanitize_soql_for_assignment(assignments)
@@ -62,7 +62,7 @@ module ActiveForce
       def quote_bound_value(value)
         value.is_a?(String) ? "'#{value}'" : value
       end
-
+  
       def replace_bind_variables(statement, values)
         bound = values.dup
         statement.gsub('?') do

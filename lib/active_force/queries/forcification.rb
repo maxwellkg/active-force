@@ -1,5 +1,5 @@
 module ActiveForce
-  module Relation
+  module Queries
     module Forcification
       
       String.send(:include, ActiveForce::Inflector)

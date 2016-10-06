@@ -1,5 +1,5 @@
 module ActiveForce
-  module Relation
+  module Queries
     module Calculations
       
       def count(column_name = nil)

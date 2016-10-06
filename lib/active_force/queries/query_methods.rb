@@ -1,5 +1,5 @@
 module ActiveForce
-  module Relation
+  module Queries
     module QueryMethods
       
       def where(conditions = nil)

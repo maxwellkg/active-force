@@ -8,13 +8,13 @@ module ActiveForce
     include ActiveForce::MissingMethods
     
     extend ActiveForce::Persistence::ClassMethods
-    extend ActiveForce::Relation::FinderMethods
-    extend ActiveForce::Relation::QueryMethods
-    extend ActiveForce::Relation::QueryBuilder
-    extend ActiveForce::Relation::Forcification::ClassMethods
-    extend ActiveForce::Relation::Calculations
-    extend ActiveForce::Relation::Querification
-    extend ActiveForce::Relation::SOQL
+    extend ActiveForce::Queries::FinderMethods
+    extend ActiveForce::Queries::QueryMethods
+    extend ActiveForce::Queries::QueryBuilder
+    extend ActiveForce::Queries::Forcification::ClassMethods
+    extend ActiveForce::Queries::Calculations
+    extend ActiveForce::Queries::Querification
+    extend ActiveForce::Queries::SOQL
     
     include ActiveModel::Validations
     
