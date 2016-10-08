@@ -5,13 +5,18 @@ module ActiveForce
     include ActiveForce::AttributeAssignment
     include ActiveForce::Validations
     
+    def self.extended(base)
+      base.send(:extend, ActiveForce::AttributeAssignment)
+      base.send(:extend, ActiveForce::Validations)
+    end
+    
     def new_record?
       self.id.nil?
     end
     
     def save!
       if valid?
-        self.new_record? ? Client.post(self) : Client.patch(self)
+        self.new_record? ? Client.connection.post(self) : Client.connection.patch(self)
         return true
       else
         raise "#{self.errors.full_messages}"

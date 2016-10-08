@@ -2,6 +2,12 @@ module ActiveForce
   module Queries
     module QueryMethods
       
+      # methods beginning with an underscore should only be called on instances
+      # of ActiveForce::Query
+      # those without an underscore can either be called on instances of
+      # ActiveForce::Query OR as a class method on a child class of 
+      # ActiveForce::Sobject
+      
       def where(conditions = nil)
         #find_by_soql(build_query(conditions: conditions))
         
