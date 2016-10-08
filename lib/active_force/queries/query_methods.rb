@@ -50,7 +50,7 @@ module ActiveForce
         self
       end
       
-      # Returns a new ActiveForce::Query with a modified where clause to include an OR statement
+      # Returns a new or modified ActiveForce::Query with a modified where clause to include an OR statement
       #
       # You must pass another ActiveForce::Query to this method
       # and the two queries must be structurally compatible, i.e. they have a matching where or having clause
