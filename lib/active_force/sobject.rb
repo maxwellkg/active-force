@@ -69,7 +69,7 @@ module ActiveForce
     end
     
     def self.sobject_name
-      @@sobject_name ||= self.to_s.gsub('ActiveForce::','')
+      @sobject_name ||= self.to_s.gsub('ActiveForce::','')
     end
     
     def self.description
@@ -85,7 +85,7 @@ module ActiveForce
     end
     
     def self.set_sobject_name(name)
-      @@sobject_name = name
+      @sobject_name = name
     end
     
     private
