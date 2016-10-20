@@ -18,17 +18,16 @@ module ActiveForce
       #     # but the chain should work identically as ActiveForce has been modeled after ActiveRecord
       #     # the chain should be an array of Hashes
       
+      attr_reader :model, :chain
       
-      attr_reader :owner, :target, :reflection
-      
-      def initialize(owner, reflection)
-        @owner, @reflection = owner, reflection
-        @chain = []
+      def initialize(model, chain)
+        @model, @chain = model, chain
         self
       end
-      
+     
+=begin
       def inspect
-        chained = self
+        chained = self.model
         @chain.each do |method|
           method.each do |method_name, args|
             chained = chained.send(method_name, args)
@@ -37,7 +36,7 @@ module ActiveForce
         
         chained
       end
-      
+=end
       
       
     end
