@@ -7,13 +7,7 @@ module ActiveForce
     String.send(:include, ActiveForce::Inflector)
    
     def has_one(name, scope = nil, **options)
-      key = options[:foreign_key] || :id
       
-      klass = options[:class_name] || name.camelize
-      
-      define_method(name) do
-        
-      end
     end
     
     def has_many(name, scope = nil, **options)
@@ -22,6 +16,10 @@ module ActiveForce
     
     def belongs_to(name, scope = nil, **options)
       
+      klass = options.delete(:class_name)
+      options[:foreign_key] ||= :id
+      
+      ActiveForce::Associations::Builder::HasOne.build(klass, name, scope, options)
     end
     
     def has_and_belongs_to_many(name, scope = nil, **options)

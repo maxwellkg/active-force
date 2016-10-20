@@ -15,7 +15,7 @@ module ActiveForce
     extend ActiveForce::Queries::Calculations
     extend ActiveForce::Queries::Querification
     extend ActiveForce::Queries::SOQL
-    extend ActiveForce::Associations::Builder
+    extend ActiveForce::Associations
     
     include ActiveModel::Validations
     
