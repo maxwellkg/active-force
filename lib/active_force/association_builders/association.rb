@@ -20,18 +20,44 @@ module ActiveForce
       
       attr_reader :model, :chain
       
-      def initialize(model, chain)
-        @model, @chain = model, chain
+      VALID_OPTIONS = [:class_name, :foreign_key].freeze
+      
+      def initialize(owner, name, scope = nil, options = {})
+        @model = options[:class_name] || name.to_s.camelize.singularize.constantize
+        @chain = build_chain(owner, name, scope, options)
         self
+      end
+      
+      def build_chain(owner, name, scope, options)
+        validate_options(options)
+        
+        chain = scope || Hash.new { {} }
+        
+        attribute = options[:foreign_key] || "#{name}_id"
+        attribute_id = owner.send(attribute)
+        
+        chain[:where] = chain[:where].merge({:id => attribute_id})
+        
+        [chain]
       end
       
       def evaluate
         chained = self.model
         @chain.each do |link|
-          link.each { |method_name, args| chained = chained.send(method_name, args) }
+          link.each do |method_name, args|
+            chained = chained.send(method_name, args)
+          end
         end
         
         chained
+      end
+      
+      def valid_options
+        VALID_OPTIONS
+      end
+      
+      def validate_options(options)
+        options.assert_valid_keys(valid_options)
       end
       
 =begin

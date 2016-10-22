@@ -15,32 +15,9 @@ module ActiveForce
     end
     
     def belongs_to(name, scope = nil, **options)
-      
-      klass = options.delete(:class_name)
-      options[:foreign_key] ||= "#{name}_id"
-      
-      chain = scope || Hash.new{ {} }
-      
       self.send(:define_method, name.to_sym) do
-        chain_to_eval = chain.dup
-        # make sure to evaluate the chain
-        begin
-          attribute_id = options[:foreign_key] ? self.send(options[:foreign_key]) : "#{name}_id"
-          chain_to_eval[:where] = chain_to_eval[:where].merge({:id => attribute_id})
-        end
-                          
-        ActiveForce::AssociationBuilders::Association.new(klass, [chain_to_eval]).evaluate
-        
-        association = ActiveForce::AssociationBuilders::Association.new(klass, [chain_to_eval])
-        
-        records = association.evaluate
-        
-        raise "Found more than one result" if records.respond_to?(:size) && records.size > 1
-        
-        records
+      ActiveForce::AssociationBuilders::HasOne.new(self, name, scope, options).evaluate
       end
-      
-      #ActiveForce::Associations::Builder::HasOne.build(self, klass, name, chain)
     end
     
     def has_and_belongs_to_many(name, scope = nil, **options)

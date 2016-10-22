@@ -52,7 +52,7 @@ module ActiveForce
     def inspect
       klass = self.object_type.activeforce_modulize.constantize
       
-      klass.find_by_soql(self.to_soql)
+      klass.find_by_soql(self.to_soql).inspect
     end
     
     def self.from_sobject(sobject)
