@@ -1,17 +1,15 @@
 module ActiveForce
-  module Associations
+  module AssociationBuilders
     module Builder
       class Association
       
         VALID_OPTIONS = [:class_name, :foreign_key].freeze
         
-        def build_association(model, name, scope = {}, options = {})
+        def build_association(owner, klass, name, scope, options)
           assert_valid_keys(options)
-          
-          chain = scope.merge(options)
   
-          self.send(:define_method, name.to_sym) do
-            ActiveForce::Associations::Association.new(model, chain)
+          owner.send(:define_method, name.to_sym) do
+            ActiveForce::Associations::Association.new(klass, chain)
           end
         end
         

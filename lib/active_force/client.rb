@@ -17,12 +17,12 @@ module ActiveForce
       :consumer_key => '3MVG9KI2HHAq33RyB4mAn_ikZ336j8wuOtYbPiz65JEBKekTCfqKzCvazy0xz9u5H1oSMZF3RaHbreTbDsuwp',
       :consumer_secret => '7232983107856014148',
       :username => 'maxwell.gove+sfdc_trailhead@nyu.edu',
-      :password => 's@l3sf0rce!',
-      :security_token => '0nuspiMGqpLekRK1hFLaJoTn'
+      :password => 's@lesforce1!',
+      :security_token => 'c43HNPQKnfMbRHLfnXjIpggw'
     }.freeze    
     
     def self.connection
-      @@connection ||= self.new
+      @connection ||= self.new
     end
     
     def initialize

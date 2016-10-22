@@ -1,5 +1,5 @@
 module ActiveForce
-  module Associations
+  module AssociationBuilders
     class Association
       
       # This is the base object for all associations related to ActiveForce
@@ -24,20 +24,26 @@ module ActiveForce
         @model, @chain = model, chain
         self
       end
-     
+      
+      def evaluate
+        chained = self.model
+        @chain.each do |link|
+          link.each { |method_name, args| chained = chained.send(method_name, args) }
+        end
+        
+        chained
+      end
+      
 =begin
       def inspect
         chained = self.model
-        @chain.each do |method|
-          method.each do |method_name, args|
-            chained = chained.send(method_name, args)
-          end
+        @chain.each do |link|
+          link.each { |method_name, args| chained = chained.send(method_name, args) }
         end
         
         chained
       end
 =end
-      
       
     end
   end

@@ -1,7 +1,7 @@
 module ActiveForce
-  module Associations
+  module AssociationBuilders
     module Builder
-      class SingularAssociation < Association
+      class HasOne < SingularAssociation
         
       end
     end

@@ -6,6 +6,7 @@ module ActiveForce
     include ActiveForce::Persistence
     include ActiveForce::Validations
     include ActiveForce::MissingMethods
+    include ActiveForce::Associations::InstanceMethods
     
     extend ActiveForce::Persistence::ClassMethods
     extend ActiveForce::Queries::FinderMethods
