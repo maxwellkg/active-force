@@ -41,6 +41,10 @@ module ActiveForce
     
     def initialize(attrs = {})
       attrs.each { |attr, value| self.send("#{attr}=", value) }
+      @klass = self.object_type.activeforce_modulize.constantize
+      @loaded = false
+      
+      self
     end
     
     def to_soql
@@ -50,9 +54,42 @@ module ActiveForce
     end
 
     def inspect
-      klass = self.object_type.activeforce_modulize.constantize
+      entries = self.to_a
+      ap "entries: #{entries}"
       
-      klass.find_by_soql(self.to_soql).inspect
+      if entries.respond_to?(:map)
+        entries.map!(&:inspect)
+        if entries.size > 10
+          entries = entries[1..9]
+          entries[10] = '...'
+        end
+
+        "#<#{self.class.name} [#{entries.join(', ')}]>"
+      else
+        entries
+      end
+    end
+    
+    def load
+      exec_queries unless loaded?
+      
+      self
+    end
+    
+    def loaded?
+      @loaded == true
+    end
+    
+    def exec_queries
+      ap "executing!"
+      @records = @klass.find_by_soql(self.to_soql)
+      @loaded = true
+      @records
+    end
+    
+    def to_a
+      self.load
+      @records
     end
     
     def self.from_sobject(sobject)
