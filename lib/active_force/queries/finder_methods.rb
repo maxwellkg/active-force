@@ -80,7 +80,7 @@ module ActiveForce
       # ActiveForce::Account.where(billing_city: "Mountain View").first(3) # returns the first 3 objects found where billing_city is "Mountain View"
       
       def first(limit = nil)
-        limit.present? ? find_nth(0, limit) : find_nth(0)
+        limit.present? ? find_nth(0, limit: limit) : find_nth(0)
       end
       
       # Nearly identical to #first but will raise an exception if no record is found
@@ -218,12 +218,8 @@ module ActiveForce
           if result.is_a? Hash
             self.new(result.rubify_keys)
           else
-            if result.size == 1
-              _metamorphose(result.first.rubify_keys)
-            else
-              result.collect do |record|
-                _metamorphose(record.rubify_keys)
-              end
+            result.collect do |record|
+              _metamorphose(record.rubify_keys)
             end
           end
         end
@@ -260,13 +256,15 @@ module ActiveForce
       end
       
       def find_nth(index, limit: 1)
+        expects_array = limit > 1
         query = querify!
         
         # default ordering in SFDC should be by the created date
         query.field_order_by_list ||= 'CreatedDate ASC'
         query.number_of_rows_to_skip = index
         query.number_of_rows_to_return = limit
-        find_by_soql(query.to_soql)
+        
+        expects_array ? query.to_a : query.to_a.first
       end
       
       def find_nth!(index)
