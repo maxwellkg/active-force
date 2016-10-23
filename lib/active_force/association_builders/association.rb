@@ -23,7 +23,6 @@ module ActiveForce
       VALID_OPTIONS = [:class_name, :foreign_key].freeze
       
       def initialize(owner, name, scope = nil, options = {})
-        ap "initializing association!"
         @model = options[:class_name] || name.to_s.camelize.singularize.constantize
         @chain = build_chain(owner, name, scope, options)
         self

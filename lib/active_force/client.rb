@@ -131,7 +131,7 @@ module ActiveForce
       end
       
       def rest_method(method, id, klass)
-        endpoint_request(method, "sobjects/#{klass}/#{id}")
+        endpoint_request(method, "sobjects/#{klass.sobject_name}/#{id}")
       end
     
   end

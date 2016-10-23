@@ -55,7 +55,6 @@ module ActiveForce
 
     def inspect
       entries = self.to_a
-      ap "entries: #{entries}"
       
       if entries.respond_to?(:map)
         entries.map!(&:inspect)
@@ -66,7 +65,7 @@ module ActiveForce
 
         "#<#{self.class.name} [#{entries.join(', ')}]>"
       else
-        entries
+        entries.inspect
       end
     end
     
@@ -81,7 +80,6 @@ module ActiveForce
     end
     
     def exec_queries
-      ap "executing!"
       @records = @klass.find_by_soql(self.to_soql)
       @loaded = true
       @records
@@ -102,6 +100,10 @@ module ActiveForce
       def sobject_name
         # TODO we'll need to somehow allow for custom ruby names
         self.object_type.activeforce_modulize
+      end
+      
+      def method_missing(method, *args, &block)
+        to_a.send(method, *args, &block)
       end
      
   end
