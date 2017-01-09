@@ -28,19 +28,6 @@ module ActiveForce
         self
       end
       
-      def build_chain(owner, name, scope, options)
-        validate_options(options)
-        
-        chain = scope || Hash.new { {} }
-        
-        attribute = options[:foreign_key] || "#{name}_id"
-        attribute_id = owner.send(attribute)
-        
-        chain[:where] = chain[:where].merge({:id => attribute_id})
-        
-        [chain]
-      end
-      
       def evaluate
         chained = self.model
         @chain.each do |link|

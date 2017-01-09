@@ -11,12 +11,14 @@ module ActiveForce
     end
     
     def has_many(name, scope = nil, **options)
-      
+      self.send(:define_method, name.to_sym) do
+        ActiveForce::AssociationBuilders::HasMany.new(self, name, scope, options).evaluate
+      end
     end
     
     def belongs_to(name, scope = nil, **options)
       self.send(:define_method, name.to_sym) do
-      ActiveForce::AssociationBuilders::HasOne.new(self, name, scope, options).evaluate
+        ActiveForce::AssociationBuilders::BelongsTo.new(self, name, scope, options).evaluate
       end
     end
     
@@ -28,9 +30,6 @@ module ActiveForce
     
       def evaluate_chain(chain)
         dup_chain = chain.dup
-        ap chain.object_id
-        ap dup_chain.object_id
-        
         
         dup_chain.each do |link|
           if link.is_a?(Hash)
