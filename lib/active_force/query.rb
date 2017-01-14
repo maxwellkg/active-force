@@ -54,7 +54,7 @@ module ActiveForce
     end
 
     def inspect
-      entries = self.to_a
+      entries = self.to_a.dup
       
       if entries.respond_to?(:map)
         entries.map!(&:inspect)

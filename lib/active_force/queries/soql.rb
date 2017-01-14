@@ -60,7 +60,15 @@ module ActiveForce
       end
       
       def quote_bound_value(value)
-        value.is_a?(String) ? "'#{value}'" : value
+        case value
+        when nil
+          "NULL"
+        when String
+          "'#{value}'"
+        else
+          value
+        end
+        #value.is_a?(String) ? "'#{value}'" : value
       end
   
       def replace_bind_variables(statement, values)
