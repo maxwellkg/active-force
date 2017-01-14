@@ -54,7 +54,7 @@ module ActiveForce
 
       # Class#all is now deprecated, so we should change this to match newer versions of rails
       def all(conditions: nil)
-        find_by_soql(build_query(conditions: conditions))
+        find_by_soql(build_query(conditions: conditions).to_soql)
       end
       
       # Will return an array of instances of the class that match the
@@ -175,6 +175,10 @@ module ActiveForce
       
       def third_to_last!
         find_nth_from_last!(2)
+      end
+      
+      def exists?(conditions)
+        self.where(conditions).limit(1).any?
       end
       
       module TakeMethods
