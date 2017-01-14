@@ -27,10 +27,16 @@ module ActiveForce
     BASE_DEFAULT_ATTRS = {}.freeze
     DEFAULT_ATTRS = {}.freeze
     
-    def initialize(attrs={}, model_definition: nil)
+    def initialize(attrs={}, definition=nil)
       attrs.symbolize_keys!
-      @model_definition = model_definition if model_definition.present?
-      self.model_definition.each do |field|
+      
+      if definition.present?
+        @model_definition = definition
+      else
+        set_model_definition
+      end
+      
+      @model_definition.each do |field|
         # TODO protect against unknown attributes
         # first set the appropriate attr_accessor or attr_reader
         ruby_name = field['name'].rubify
@@ -38,14 +44,14 @@ module ActiveForce
         class_eval { field['isCreatable'] ? attr_accessor(ruby_name) : attr_reader(ruby_name) }
         set_validations(field)
         
-        val = attrs[ruby_name.to_sym]
+        val = attrs[ruby_name.to_sym] || field['defaultValue']
         instance_variable_set("@#{ruby_name}", type_cast(type: field['type'], value: val))
       end
       
       self
     end
     
-    def model_definition
+    def set_model_definition
       @model_definition ||= self.class.description['fields']
     end
     
