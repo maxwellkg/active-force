@@ -85,15 +85,12 @@ module ActiveForce
       #   ActiveForce::Account.select([:id, :name]) # "SELECT Id, Name FROM Account"
       
       def select(*fields)
-        return super if block_given?
-        
-        querify!._select!(*fields)
+        querify!._select!(fields)
       end
       
       def _select!(*fields)
         fields.flatten!
-        # TODO make this an array rather than a string?
-        self.field_list = fields.map { |f| forcify(f) }.join(', ')
+        self.field_list = fields.map { |f| forcify(f) }
         
         self
       end
@@ -144,7 +141,22 @@ module ActiveForce
         self
       end
       
+      def includes(*args)
+        check_if_method_has_args!(:includes, args)
+        querify!._includes!(*args)
+      end
+      
+      def _includes!(*args)
+
+      end
+      
       private
+      
+        def check_if_method_has_args!(method_name, args)
+          if args.empty?
+            raise ArgumentError "The method .#{method_name} must contain arguments."
+          end
+        end
       
         def process_or_arguments(*args)
           case args.first

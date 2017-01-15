@@ -213,7 +213,7 @@ module ActiveForce
       private
       
         def _load(id)
-          Client.connection.get(id, self)        
+          Client.connection.get_sobject(id, self)        
         end
         
         # creates a new instance (or collection of instances) of the class from an API request response

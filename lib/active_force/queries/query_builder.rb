@@ -20,7 +20,7 @@ module ActiveForce
       end
     
       def fields_for_soql
-        description['fields'].map { |f| f['name'] }.join(', ')
+        description['fields'].map { |f| f['name'] }
       end
       
       def execute

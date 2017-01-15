@@ -7,7 +7,7 @@ module ActiveForce
       nillable = field['nillable']
                   
       allow_set = if new_record?
-                    field['createable'] && !self.class.not_really_creatable.include?(field['name'])
+                    field['createable'] && !self.class.not_really_createable.include?(field['name'])
                   else
                     field['updateable'] && !self.class.not_really_updateable.include?(field['name'])
                   end

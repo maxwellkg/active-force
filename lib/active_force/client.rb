@@ -29,20 +29,24 @@ module ActiveForce
       authenticate
     end
       
-    def get(id, klass)
-      rest_method(:get, id, klass)
+    def get_sobject(id, klass)
+      rest_method(:method => :get, :id => id, :klass => klass)
     end
     
-    def post(sobject)
-      rest_method(:post, id, klass)
+    def post_sobject(sobject)
+      disinclude = sobject.class.not_createable
+      data = sobject.class.forcify(sobject.attributes).reject { |att| disinclude.include?(att) }
+      rest_method(:method => :post, :klass => sobject.class, :data => data)
     end
     
-    def patch(sobject)
-      rest_method(:patch, id, klass)
+    def patch_sobject(sobject)
+      disinclude = sobject.class.not_updateable
+      data = sobject.class.forcity(sobject.attributes).reject { |att| disinclude.include?(att) }
+      rest_method(:method => :patch, :id => sobject.id, :klass => sobject.class, data => data)
     end
     
-    def delete(sobject)
-      rest_method(:delete, id, klass)
+    def delete_sobject(sobject)
+      rest_method(:method => :delete, :id => sobject.id, :klass => sobject.class)
     end
     
     def describe_all
@@ -106,6 +110,7 @@ module ActiveForce
       end
         
       def endpoint_request(method, endpoint, data = {})
+        ap "beginning request!"
         http = Net::HTTP.new(@instance_host, PORT)
         http.use_ssl = true
         
@@ -114,8 +119,11 @@ module ActiveForce
         request['Content-Type'] = 'application/json'
         
         unless data.empty? || method == :get
-          data.delete('Id') if data['Id']  # the id wil be specified in the request uri, not in the body
+          ap "deleting id!"
+          data.delete('Id')  # the id wil be specified in the request uri, not in the body
+          ap data
           request.body = data.to_json
+          ap request.body
         end
         
         response = http.request(request)
@@ -130,8 +138,8 @@ module ActiveForce
         
       end
       
-      def rest_method(method, id, klass)
-        endpoint_request(method, "sobjects/#{klass.sobject_name}/#{id}")
+      def rest_method(method:, id: nil, klass:, data:{})
+        endpoint_request(method, "sobjects/#{klass.sobject_name}#{"/#{id}" if id.present?}", data)
       end
     
   end

@@ -30,29 +30,31 @@ module ActiveForce
     def initialize(attrs={}, definition=nil)
       attrs.symbolize_keys!
       
-      if definition.present?
-        @model_definition = definition
-      else
-        set_model_definition
-      end
-      
-      @model_definition.each do |field|
+      self.class.model_definition.each do |field|
         # TODO protect against unknown attributes
         # first set the appropriate attr_accessor or attr_reader
         ruby_name = field['name'].rubify
         
-        class_eval { field['isCreatable'] ? attr_accessor(ruby_name) : attr_reader(ruby_name) }
+        class_eval { field['createable'] ? attr_accessor(ruby_name) : attr_reader(ruby_name) }
         set_validations(field)
         
         val = attrs[ruby_name.to_sym] || field['defaultValue']
         instance_variable_set("@#{ruby_name}", type_cast(type: field['type'], value: val))
       end
       
+      ap attrs.select { |k,v| v.is_a?(Hash) && k != 'attributes' }
+      
       self
     end
     
-    def set_model_definition
-      @model_definition ||= self.class.description['fields']
+    def self.model_definition
+      @model_definition ||= self.description['fields']
+    end
+    
+    def attributes
+      attrs = {}
+      self.instance_variables.reject { |v| [:@model_definition, :@errors, :@record_type_id].include?(v) }.each { |v| attrs[v.to_s.gsub('@','')] = self.instance_variable_get(v) }
+      attrs
     end
     
     def fill_defaults
@@ -82,12 +84,20 @@ module ActiveForce
       client.describe(self)
     end
     
-    def self.not_really_creatable
+    def self.not_really_createable
       []
+    end
+    
+    def self.not_createable
+      self.description['fields'].collect { |f| f['name'] if f['createable'] == false }.push(not_really_createable).flatten.compact
     end
     
     def self.not_really_updateable
       []
+    end
+    
+    def self.not_updateable
+      self.description['fields'].collect { |f| f['name'] if f['updateable'] == false }.push(not_really_updateable).flatten.compact
     end
     
     def self.set_sobject_name(name)

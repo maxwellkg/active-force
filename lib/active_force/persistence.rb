@@ -16,7 +16,7 @@ module ActiveForce
     
     def save!
       if valid?
-        self.new_record? ? Client.connection.post(self) : Client.connection.patch(self)
+        self.new_record? ? Client.connection.post_sobject(self) : Client.connection.patch_sobject(self)
         return true
       else
         raise "#{self.errors.full_messages}"
@@ -52,7 +52,7 @@ module ActiveForce
     alias_method :update_attributes, :update
     
     def delete
-      Client.connection.delete(self)
+      Client.connection.delete_sobject(self)
     end
     # for the time being, these should be the same
     alias_method :destroy, :delete
@@ -80,6 +80,8 @@ module ActiveForce
       end
       
     end
+    
+    private
     
   end
 end

@@ -49,7 +49,11 @@ module ActiveForce
     
     def to_soql
       BUILDER.collect do |k,v|
-        self.send(v).present? ? "#{k} #{self.send(v)}" : nil
+        if v == :field_list
+          "#{k} #{self.send(v).join(', ')}"
+        else
+          self.send(v).present? ? "#{k} #{self.send(v)}" : nil
+        end
       end.compact.join(' ')
     end
 
