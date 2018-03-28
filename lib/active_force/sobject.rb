@@ -27,14 +27,12 @@ module ActiveForce
     BASE_DEFAULT_ATTRS = {}.freeze
     DEFAULT_ATTRS = {}.freeze
 
-    class_attribute :sobject_name, :model_definition, :fields
+    class_attribute :sobject_name
     
     def initialize(attrs={}, definition=nil)
-      self.model_definition
       attrs.symbolize_keys!
       
       self.class.model_definition.each do |field|
-        # first set the appropriate attr_accessor or attr_reader
         ruby_name = field['name'].rubify
         val = attrs[ruby_name.to_sym] || field['defaultValue']
         instance_variable_set("@#{ruby_name}", type_cast(type: field['type'], value: val))
@@ -48,21 +46,16 @@ module ActiveForce
     end
     
     def self.model_definition
-      return @model_definition if @model_definition.present?
+      @model_definition ||= begin
+                              fields = self._description['fields']
+                              _set_attrs_and_validations(fields)
 
-      fields = self.description['fields']
-      fields.each do |field|
-        ruby_name = field['name'].rubify
-
-        field['updateable'] ? attr_accessor(ruby_name) : attr_reader(ruby_name)
-        set_validations(field, self)
-      end
-
-      @model_definition = fields
+                              fields
+                            end
     end
 
     def self.fields
-      fields ||= model_definition.map { |field| field['name'].rubify.to_sym }
+      @fields ||= model_definition.map { |field| field['name'].rubify.to_sym }
     end
     
     def attributes
@@ -72,8 +65,17 @@ module ActiveForce
     end
 
     private
+
+      def self._set_attrs_and_validations(fields)
+        fields.each do |field|
+          ruby_name = field['name'].rubify
+
+          field['updateable'] ? attr_accessor(ruby_name) : attr_reader(ruby_name)
+          set_validations(field, self)
+        end
+      end
     
-      def fill_defaults
+      def _fill_defaults
         defaults = {}
         model_definition.map do |f|
           defaults[f['name'].to_sym] = f['defaultValue'] if f['defaultValue']
@@ -92,16 +94,16 @@ module ActiveForce
         ActiveForce::Client.connection
       end
       
-      def self.description
+      def self._description
         client.describe(self)
       end
       
-      def self.not_createable
-        self.description['fields'].collect { |f| f['name'] if f['createable'] == false }
+      def self._not_createable
+        self._description['fields'].collect { |f| f['name'] if f['createable'] == false }
       end
       
-      def self.not_updateable
-        self.description['fields'].collect { |f| f['name'] if f['updateable'] == false }
+      def self._not_updateable
+        self._description['fields'].collect { |f| f['name'] if f['updateable'] == false }
       end
     
   end

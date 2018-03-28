@@ -11,14 +11,24 @@ module ActiveForce
     end
     
     def has_many(name, scope = nil, **options)
+      instance_var = "@_#{name}"
       self.send(:define_method, name.to_sym) do
-        ActiveForce::AssociationBuilders::HasMany.new(self, name, scope, options).evaluate
+        if instance_variable_get(instance_var).nil?
+          instance_variable_set(instance_var, ActiveForce::AssociationBuilders::HasMany.new(self, name, scope, options).evaluate)
+        end
+
+        instance_variable_get(instance_var)
       end
     end
     
     def belongs_to(name, scope = nil, **options)
+      instance_var = "@_#{name}"
       self.send(:define_method, name.to_sym) do
-        ActiveForce::AssociationBuilders::BelongsTo.new(self, name, scope, options).evaluate
+        if instance_variable_get(instance_var).nil?
+          instance_variable_set(instance_var, ActiveForce::AssociationBuilders::BelongsTo.new(self, name, scope, options).evaluate)
+        end
+
+        instance_variable_get(instance_var)
       end
     end
     

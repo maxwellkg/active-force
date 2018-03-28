@@ -2,7 +2,7 @@ module ActiveForce
   module Queries
     module Calculations
       
-      def count(column_name = nil)
+      def count(column_name = 'Id')
         calculate(:count, column_name)
       end
       
@@ -33,11 +33,11 @@ module ActiveForce
       def calculate(operation, column_name)
         selector = "#{operation}(#{column_name})"
         
-        q = ActiveForce::Query.new(field_list: selector, object_type: self.sobject_name)
+        q = ActiveForce::Query.new(field_list: [selector], object_type: self.sobject_name)
         
         result = Client.connection.execute_soql(q.to_soql)
         
-        operation == :count ? result['totalSize'] : result['records'].first['expr0']
+        result['records'].first['expr0']
       end
       
     end

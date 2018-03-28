@@ -105,7 +105,7 @@ module ActiveForce
       end
         
       def endpoint_request(method, endpoint, data = {})
-        ap "beginning request!"
+        ap "beginning request to endpoint: #{endpoint}"
         http = Net::HTTP.new(@instance_host, PORT)
         http.use_ssl = true
         

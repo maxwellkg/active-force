@@ -14,11 +14,11 @@ module ActiveForce
         def forcify(obj)
           case obj
           when String
-            field = description['fields'].detect { |f| f['name'].rubify == obj }
+            field = _description['fields'].detect { |f| f['name'].rubify == obj }
             field.nil? ? nil : field['name']
           when Hash
             forcified = {}
-            fields = description['fields']
+            fields = _description['fields']
             obj.each do |k,v|
               field = fields.detect { |f| f['name'].rubify == k }
               forcified[field['name']] = v if field.present?

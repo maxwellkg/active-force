@@ -1,9 +1,13 @@
 module ActiveForce
   module Inflector
-   
-   def activeforce_modulize
+
+    def activeforce_modulize
      "ActiveForce::#{self.capitalize}"
-   end
+    end
+
+    def activeforce_constantize
+      self.activeforce_modulize.constantize
+    end
     
   end
 end

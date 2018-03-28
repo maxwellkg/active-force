@@ -20,7 +20,8 @@ module ActiveForce
       end
     
       def fields_for_soql
-        description['fields'].map { |f| f['name'] }
+        klass = self.sobject_name.activeforce_constantize
+        klass.model_definition.map { |field | field['name'] }
       end
       
       def execute
