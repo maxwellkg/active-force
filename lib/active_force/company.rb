@@ -1,5 +1,5 @@
 module ActiveForce
   class Company < Sobject
-    set_sobject_name 'Account'
+    self.sobject_name = 'account'
   end
 end

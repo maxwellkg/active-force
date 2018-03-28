@@ -2,6 +2,7 @@ require 'net/http'
 
 module ActiveForce
   class Client
+    include Singleton
     
     Net::HTTPResponse.send(:include, ActiveForce::API::ResponseMethods)
     
@@ -9,20 +10,10 @@ module ActiveForce
     PORT = 443.freeze
     AUTHENTICATION_ENDPOINT = '/services/oauth2/token'.freeze
     SERVICES_BASE = '/services/data'.freeze
-    VERSION = 'v36.0'.freeze
-    
-    # TODO move this to a secrets file so as not to expose in the
-    # code base
-    CREDENTIALS = {
-      :consumer_key => '3MVG9KI2HHAq33RyB4mAn_ikZ336j8wuOtYbPiz65JEBKekTCfqKzCvazy0xz9u5H1oSMZF3RaHbreTbDsuwp',
-      :consumer_secret => '7232983107856014148',
-      :username => 'maxwell.gove+sfdc_trailhead@nyu.edu',
-      :password => 's@lesforce1!',
-      :security_token => 'c43HNPQKnfMbRHLfnXjIpggw'
-    }.freeze    
+    VERSION = 'v36.0'.freeze   
     
     def self.connection
-      @connection ||= self.new
+      instance
     end
     
     def initialize
@@ -86,20 +77,24 @@ module ActiveForce
     private
     
       def authenticate
+        config = ActiveForce::Config.instance
+
         http = Net::HTTP.new(HOST, PORT)
         http.use_ssl = true
         
         request = Net::HTTP::Post.new(AUTHENTICATION_ENDPOINT)
         request.set_form_data({
           :grant_type => 'password',
-          :client_id => CREDENTIALS[:consumer_key],
-          :client_secret => CREDENTIALS[:consumer_secret],
-          :username => CREDENTIALS[:username],
-          :password => "#{CREDENTIALS[:password]}#{CREDENTIALS[:security_token]}"
+          :client_id => config.consumer_key,
+          :client_secret => config.consumer_secret,
+          :username => config.username,
+          :password => "#{config.password}#{config.security_token}"
         })
         
         response = http.request(request)
         body_hsh = JSON.parse(response.body)
+
+        raise ActiveForce::ConnectionError.new("#{body_hsh['error'].humanize.capitalize}: #{body_hsh['error_description']}") if response.is_bad?
         
         @instance_host = body_hsh['instance_url'].gsub('https://','')
         @access_token = body_hsh['access_token']
@@ -128,7 +123,7 @@ module ActiveForce
         
         response = http.request(request)
         
-        raise "Salesforce API error #{response.code}: #{response.body} -- #{request.path} #{request.uri} #{request.body}" if response.is_bad?
+        raise ActiveForce::ConnectionError.new("Salesforce API error #{response.code}: #{response.body} -- #{request.path} #{request.uri} #{request.body}") if response.is_bad?
         
         if response.body
           JSON.parse(response.body)
