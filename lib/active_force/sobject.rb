@@ -27,7 +27,7 @@ module ActiveForce
     BASE_DEFAULT_ATTRS = {}.freeze
     DEFAULT_ATTRS = {}.freeze
 
-    class_attribute :sobject_name
+    class_attribute :sobject_name, :primary_key
     
     def initialize(attrs={}, definition=nil)
       attrs.symbolize_keys!
@@ -52,6 +52,10 @@ module ActiveForce
 
                               fields
                             end
+    end
+
+    def self.primary_key
+      @primary_key ||= :id
     end
 
     def self.fields

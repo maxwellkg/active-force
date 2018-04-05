@@ -122,14 +122,18 @@ module ActiveForce
         end
         
         response = http.request(request)
-        
-        raise ActiveForce::ConnectionError.new("Salesforce API error #{response.code}: #{response.body} -- #{request.path} #{request.uri} #{request.body}") if response.is_bad?
-        
-        if response.body
-          JSON.parse(response.body)
-        else
-          {}
+        body = response.body ? JSON.parse(response.body) : {}
+        ap body
+
+        if response.is_bad?
+          msg = "Salesforce API error #{response.code}: #{response.body} -- #{request.path} #{request.uri} #{request.body}"
+          error = response.code
+          error_code = body.first['errorCode']
+
+          raise ActiveForce::ConnectionError.new(msg, error, error_code)
         end
+
+        body_hsh
         
       end
       

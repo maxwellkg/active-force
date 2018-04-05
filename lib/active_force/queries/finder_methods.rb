@@ -213,7 +213,7 @@ module ActiveForce
       private
       
         def _load(id)
-          Client.connection.get_sobject(id, self)        
+          Client.connection.get_sobject(id, self)
         end
         
         # creates a new instance (or collection of instances) of the class from an API request response
@@ -250,10 +250,20 @@ module ActiveForce
         
         case ids.size
         when 0
-          raise "Record not found. You must specify an ID to locate a record in Salesforce"
+          error_message = "Couldn't find #{self.name} without an ID"
+          raise ActiveForce::RecordNotFound.new(error_message, self, primary_key)
         when 1
-          result = find_one(ids.first)
-          expects_array ? Array(result) : result
+          begin
+            result = find_one(ids.first)
+            expects_array ? Array(result) : result
+          rescue ActiveForce::ConnectionError => e
+            if e.error_code == 'NOT_FOUND'
+              msg = "Couldn't find #{self.name} with '#{primary_key}'= #{ids.first}"
+              raise ActiveForce::RecordNotFound.new(msg, self, primary_key, ids.first)
+            else
+              raise e
+            end
+          end
         else
           find_some(ids)
         end
@@ -285,6 +295,16 @@ module ActiveForce
       
       def find_nth_from_last!(index)
         find_nth_from_last(index) or raise "Couldn't find #{self.sobject_name} with index of - #{index}"
+      end
+
+      # This method is called whenever no results are found for a given id or series of ids, and will raise
+      # an ActiveForce::RecordNotFound error.
+      #
+      # If multiple ids are provided, the error should be raised specifying the number provided +expected size+
+      # and the number actually found +result_size+
+
+      def raise_record_not_found_exception!(ids = nil, result_size = nil, expected_size = nil, key = primary_key, not_found_ids = nil)
+
       end
       
     end
