@@ -29,6 +29,7 @@ gem 'awesome_print'
 # for running rspec tests
 gem 'spec'
 
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

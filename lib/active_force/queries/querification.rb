@@ -3,7 +3,7 @@ module ActiveForce
     module Querification
    
       def querify!
-        if self.is_a?(Class) && self.superclass == ActiveForce::Sobject
+        if self.is_a?(Class) && self.superclass == Salesforce::Sobject
           ActiveForce::Query.from_sobject(self)
         elsif self.is_a? ActiveForce::Query
           self

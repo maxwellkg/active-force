@@ -2,7 +2,7 @@ module ActiveForce
   module Inflector
 
     def activeforce_modulize
-     "ActiveForce::#{self.capitalize}"
+     "Salesforce::#{self.capitalize}"
     end
 
     def activeforce_constantize
