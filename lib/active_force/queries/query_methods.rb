@@ -31,7 +31,8 @@ module ActiveForce
       end
       
       def _where!(conditions)
-        self.condition_expression = sanitize_soql_for_assignment(conditions)
+        create_or_append_condition_expression!(sanitize_soql_for_assignment(conditions))
+
         self
       end
       
@@ -46,7 +47,8 @@ module ActiveForce
       end
       
       def _not!(conditions)
-        self.condition_expression = sanitize_soql_for_inequality(conditions)
+        create_or_append_condition_expression!(sanitize_soql_for_inequality(conditions))
+
         self
       end
       
@@ -85,6 +87,14 @@ module ActiveForce
       #   ActiveForce::Account.select([:id, :name]) # "SELECT Id, Name FROM Account"
       
       def select(*fields)
+        if block_given?
+          raise ArgumentError "`select' with block doesn't take arguments." if fields.any?
+
+          super
+        end
+
+        raise ArgumentError "Call `select with at least one field" if fields.empty?
+
         querify!._select!(fields)
       end
       
@@ -195,6 +205,14 @@ module ActiveForce
           [:condition_expression, :having_condition_expression].collect do |expr|
             self.send(expr).present? && other.send(expr).present?
           end.any?
+        end
+
+        def create_or_append_condition_expression!(soql)
+          if condition_expression.nil?
+            self.condition_expression = soql
+          else
+            self.condition_expression += " AND #{soql}"
+          end
         end
       
     end
