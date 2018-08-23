@@ -32,7 +32,7 @@ module ActiveForce
     
     def patch_sobject(sobject)
       disinclude = sobject.class.not_updateable
-      data = sobject.class.forcity(sobject.attributes).reject { |att| disinclude.include?(att) }
+      data = sobject.class.forcify(sobject.attributes).reject { |att| disinclude.include?(att) }
       rest_method(:method => :patch, :id => sobject.id, :klass => sobject.class, data => data)
     end
     
@@ -42,6 +42,10 @@ module ActiveForce
     
     def describe_all
       endpoint_request(:get, "sobjects/")
+    end
+
+    def sobjects
+      @sobjects ||= describe_all['sobjects'].map { |sobj| sobj['name'] }
     end
     
     def describe(klass)
@@ -61,8 +65,6 @@ module ActiveForce
       results.push(get_next_records(results)) if results['nextRecordsUrl']
       
       results
-      
-      #results.flatten
     end
     
     def get_next_records(results)
@@ -114,7 +116,6 @@ module ActiveForce
         request['Content-Type'] = 'application/json'
         
         unless data.empty? || method == :get
-          ap "deleting id!"
           data.delete('Id')  # the id wil be specified in the request uri, not in the body
           ap data
           request.body = data.to_json
@@ -123,7 +124,6 @@ module ActiveForce
         
         response = http.request(request)
         body = response.body ? JSON.parse(response.body) : {}
-        ap body
 
         if response.is_bad?
           msg = "Salesforce API error #{response.code}: #{response.body} -- #{request.path} #{request.uri} #{request.body}"
@@ -133,8 +133,7 @@ module ActiveForce
           raise ActiveForce::ConnectionError.new(msg, error, error_code)
         end
 
-        body_hsh
-        
+        body
       end
       
       def rest_method(method:, id: nil, klass:, data:{})

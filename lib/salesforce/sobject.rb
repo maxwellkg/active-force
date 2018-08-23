@@ -1,4 +1,4 @@
-module ActiveForce
+module Salesforce
   class Sobject
     
     # custom for ActiveForce
